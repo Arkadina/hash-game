@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import "./App.css";
 import { IoMdPizza, IoIosLeaf } from "react-icons/io";
@@ -24,6 +24,13 @@ const SmallContainer = styled.div`
 function App() {
     const [userMove, setUserMove] = useState("pizza");
     const [moves, setMoves] = useState(["", "", "", "", "", "", "", "", ""]);
+    const [pizzaMoves, setPizzaMoves] = useState([]);
+    const [leafMoves, setLeafMoves] = useState([]);
+    const [winner, setWinner] = useState(null);
+
+    useEffect(() => {
+        verifyWinner();
+    }, [pizzaMoves, leafMoves]);
 
     function handleMove(pos) {
         if (moves[pos] === "") {
@@ -33,24 +40,85 @@ function App() {
                 userMove,
             };
             setMoves([...data]);
+            if (userMove === "leaf") {
+                setLeafMoves([...leafMoves, pos].sort());
+            } else {
+                setPizzaMoves([...pizzaMoves, pos].sort());
+            }
             userMove === "pizza" ? setUserMove("leaf") : setUserMove("pizza");
-            handleSetIcon(pos);
-            verifyMove();
         }
-
-        console.log(moves);
     }
 
-    function verifyMove() {}
+    function verifyWinner() {
+        let arrayLeaf = [
+            [leafMoves.slice(0, 3)],
+            [leafMoves.slice(1, 4)],
+            [leafMoves.slice(2, 5)],
+            [(pizzaMoves[0], pizzaMoves[1], pizzaMoves[3])],
+        ];
+        let arrayPizza = [
+            [pizzaMoves.slice(0, 3)],
+            [pizzaMoves.slice(1, 4)],
+            [pizzaMoves.slice(2, 5)],
+            [(pizzaMoves[0], pizzaMoves[1], pizzaMoves[3])],
+        ];
 
-    function handleSetIcon(pos) {
-        moves[pos] !== "" ? (
-            userMove === "pizza" ? (
-                <IoMdPizza />
-            ) : (
-                <IoIosLeaf />
-            )
-        ) : null;
+        console.log(arrayPizza);
+
+        let arrayWins = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [2, 5, 8],
+            [1, 4, 7],
+            [0, 3, 6],
+            [0, 4, 8],
+            [2, 4, 6],
+        ];
+
+        let hasLeafWon = null;
+        let hasPizzaWon = null;
+
+        console.log("Leaf:" + leafMoves);
+        console.log("Pizza:" + pizzaMoves);
+        console.log(moves);
+
+        // console.log(arrayLeaf);
+        // console.log(arrayPizza);
+
+        for (let i = 0; i < arrayLeaf.length; i++) {
+            for (let y = 0; y < arrayWins.length; y++) {
+                if (arrayLeaf[i].toString() == arrayWins[y].toString()) {
+                    hasLeafWon = true;
+                }
+            }
+        }
+
+        for (let i = 0; i < arrayLeaf.length; i++) {
+            for (let y = 0; y < arrayWins.length; y++) {
+                if (arrayPizza[i].toString() == arrayWins[y].toString()) {
+                    hasPizzaWon = true;
+                }
+            }
+        }
+
+        // 0, 1, 2
+        // 3, 4, 5
+        // 6, 7, 8
+        // 2, 5, 8
+        // 1, 4, 7
+        // 0, 3, 6
+        // 0, 4, 8
+        // 2, 4, 6
+        if (hasLeafWon) {
+            alert("Leaf ganhou");
+            setWinner("Leaf");
+        }
+
+        if (hasPizzaWon) {
+            alert("Pizza ganhou");
+            setWinner("Pizza");
+        }
     }
 
     return (
@@ -59,6 +127,7 @@ function App() {
             <h1>
                 Vez de {userMove === "pizza" ? <IoMdPizza /> : <IoIosLeaf />}
             </h1>
+            <h2>Ganhador: {winner != null ? winner : ""}</h2>
             <Container>
                 {moves.map((item, index) => (
                     <SmallContainer
