@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import "./App.css";
 import { IoMdPizza, IoIosLeaf } from "react-icons/io";
+import { generateId } from "./utils/generateId";
 
 const Container = styled.div`
     width: 600px;
@@ -31,6 +32,27 @@ function App() {
     useEffect(() => {
         verifyWinner();
     }, [pizzaMoves, leafMoves]);
+
+    if (winner) {
+        let obj = {
+            id: generateId(8),
+            winner,
+        };
+
+        console.log(obj);
+    }
+
+    if ((leafMoves.length + pizzaMoves.length == 9) & (winner == null)) {
+        setWinner("No winner");
+        let obj = {
+            id: generateId(8),
+            winner: "No winner",
+        };
+
+        console.log(obj);
+    }
+
+    console.log(leafMoves);
 
     function handleMove(pos) {
         if (moves[pos] === "") {
@@ -63,8 +85,6 @@ function App() {
             [(pizzaMoves[0], pizzaMoves[1], pizzaMoves[3])],
         ];
 
-        console.log(arrayPizza);
-
         let arrayWins = [
             [0, 1, 2],
             [3, 4, 5],
@@ -79,13 +99,6 @@ function App() {
         let hasLeafWon = null;
         let hasPizzaWon = null;
 
-        console.log("Leaf:" + leafMoves);
-        console.log("Pizza:" + pizzaMoves);
-        console.log(moves);
-
-        // console.log(arrayLeaf);
-        // console.log(arrayPizza);
-
         for (let i = 0; i < arrayLeaf.length; i++) {
             for (let y = 0; y < arrayWins.length; y++) {
                 if (arrayLeaf[i].toString() == arrayWins[y].toString()) {
@@ -94,7 +107,7 @@ function App() {
             }
         }
 
-        for (let i = 0; i < arrayLeaf.length; i++) {
+        for (let i = 0; i < arrayPizza.length; i++) {
             for (let y = 0; y < arrayWins.length; y++) {
                 if (arrayPizza[i].toString() == arrayWins[y].toString()) {
                     hasPizzaWon = true;
@@ -102,21 +115,11 @@ function App() {
             }
         }
 
-        // 0, 1, 2
-        // 3, 4, 5
-        // 6, 7, 8
-        // 2, 5, 8
-        // 1, 4, 7
-        // 0, 3, 6
-        // 0, 4, 8
-        // 2, 4, 6
         if (hasLeafWon) {
-            alert("Leaf ganhou");
             setWinner("Leaf");
         }
 
         if (hasPizzaWon) {
-            alert("Pizza ganhou");
             setWinner("Pizza");
         }
     }
