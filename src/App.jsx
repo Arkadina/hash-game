@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import styled from "styled-components";
-import "./App.css";
 import { IoMdPizza, IoIosLeaf } from "react-icons/io";
 import { generateId } from "./utils/generateId";
+
+import styled from "styled-components";
+import "./App.css";
 
 const Container = styled.div`
     width: 600px;
@@ -10,16 +11,16 @@ const Container = styled.div`
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: 1fr 1fr 1fr;
-    border: 2px solid #ccc;
     border-radius: 4px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 `;
 
 const SmallContainer = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px solid #ccc;
     cursor: pointer;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
 `;
 
 function App() {
@@ -51,8 +52,6 @@ function App() {
 
         console.log(obj);
     }
-
-    console.log(leafMoves);
 
     function handleMove(pos) {
         if (moves[pos] === "") {
@@ -122,6 +121,8 @@ function App() {
         if (hasPizzaWon) {
             setWinner("Pizza");
         }
+
+        console.log("verify");
     }
 
     return (
