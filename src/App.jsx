@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { IoMdPizza, IoIosLeaf } from "react-icons/io";
 import { generateId } from "./utils/generateId";
+import { useSelector, useDispatch } from "react-redux";
+import { addData } from "./features/dataSlice";
 
 import styled from "styled-components";
 import "./App.css";
@@ -29,6 +31,10 @@ function App() {
     const [pizzaMoves, setPizzaMoves] = useState([]);
     const [leafMoves, setLeafMoves] = useState([]);
     const [winner, setWinner] = useState(null);
+    const data = useSelector((state) => state.data);
+
+    const dispatch = useDispatch();
+    dispatch(addData("21"));
 
     useEffect(() => {
         verifyWinner();
@@ -41,6 +47,8 @@ function App() {
         };
 
         console.log(obj);
+
+        console.log(data);
     }
 
     if ((leafMoves.length + pizzaMoves.length == 9) & (winner == null)) {
@@ -128,9 +136,9 @@ function App() {
     return (
         <div className="App">
             <h1>Jogo da velha</h1>
-            <h1>
+            <h2>
                 Vez de {userMove === "pizza" ? <IoMdPizza /> : <IoIosLeaf />}
-            </h1>
+            </h2>
             <h2>Ganhador: {winner != null ? winner : ""}</h2>
             <Container>
                 {moves.map((item, index) => (
