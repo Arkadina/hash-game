@@ -7,6 +7,12 @@
     justify-content: center;
     max-height: 100vh;
     font-family: "Lato", sans-serif;
+    background: rgb(238, 174, 202);
+    background: radial-gradient(
+        circle,
+        rgba(238, 174, 202, 1) 0%,
+        rgba(148, 187, 233, 1) 100%
+    );
 }
 
 .iconGame {

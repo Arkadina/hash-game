@@ -3,6 +3,7 @@ import { IoMdPizza, IoIosLeaf } from "react-icons/io";
 import { generateId } from "./utils/generateId";
 import { useSelector, useDispatch } from "react-redux";
 import { addData } from "./features/dataSlice";
+import { motion } from "framer-motion";
 
 import styled from "styled-components";
 import "./App.css";
@@ -32,13 +33,7 @@ function App() {
     const [leafMoves, setLeafMoves] = useState([]);
     const [winner, setWinner] = useState(null);
     const data = useSelector((state) => state.data);
-
     const dispatch = useDispatch();
-    dispatch(addData("21"));
-
-    useEffect(() => {
-        verifyWinner();
-    }, [pizzaMoves, leafMoves]);
 
     if (winner) {
         let obj = {
@@ -48,6 +43,7 @@ function App() {
 
         console.log(obj);
 
+        dispatch(addData(obj));
         console.log(data);
     }
 
@@ -148,9 +144,37 @@ function App() {
                     >
                         {moves[index] !== "" ? (
                             moves[index].userMove === "pizza" ? (
-                                <IoMdPizza className="iconGame" />
+                                <motion.div
+                                    initial={{
+                                        opacity: 0,
+                                        scale: 0,
+                                    }}
+                                    animate={{
+                                        opacity: 1,
+                                        scale: [0.5, 1.2, 0.8, 1],
+                                    }}
+                                    transition={{
+                                        duration: 0.4,
+                                    }}
+                                >
+                                    <IoMdPizza className="iconGame" />
+                                </motion.div>
                             ) : (
-                                <IoIosLeaf className="iconGame" />
+                                <motion.div
+                                    initial={{
+                                        opacity: 0,
+                                        scale: 0,
+                                    }}
+                                    animate={{
+                                        opacity: 1,
+                                        scale: [0.5, 1.2, 0.8, 1],
+                                    }}
+                                    transition={{
+                                        duration: 0.4,
+                                    }}
+                                >
+                                    <IoIosLeaf className="iconGame" />
+                                </motion.div>
                             )
                         ) : null}
                     </SmallContainer>
