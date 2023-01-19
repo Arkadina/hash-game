@@ -1,12 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 export const dataSlice = createSlice({
-    name: "dataSlice!",
+    name: "data",
     initialState: [],
     reducers: {
         addData: (state, action) => {
             console.log("addData reducer");
-
+            console.log(action.payload)
             return [...state, action.payload];
         },
     },

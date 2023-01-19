@@ -14,8 +14,7 @@ const Container = styled.div`
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: 1fr 1fr 1fr;
-    border-radius: 4px;
-    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    background-color: #fff;
 `;
 
 const SmallContainer = styled.div`
@@ -35,26 +34,8 @@ function App() {
     const data = useSelector((state) => state.data);
     const dispatch = useDispatch();
 
-    if (winner) {
-        let obj = {
-            id: generateId(8),
-            winner,
-        };
-
-        console.log(obj);
-
+    function handle(obj) {
         dispatch(addData(obj));
-        console.log(data);
-    }
-
-    if ((leafMoves.length + pizzaMoves.length == 9) & (winner == null)) {
-        setWinner("No winner");
-        let obj = {
-            id: generateId(8),
-            winner: "No winner",
-        };
-
-        console.log(obj);
     }
 
     function handleMove(pos) {
@@ -72,6 +53,7 @@ function App() {
             }
             userMove === "pizza" ? setUserMove("leaf") : setUserMove("pizza");
         }
+        verifyWinner();
     }
 
     function verifyWinner() {
@@ -119,18 +101,55 @@ function App() {
         }
 
         if (hasLeafWon) {
-            setWinner("Leaf");
+            let obj = {
+                id: generateId(8),
+                winner: "Leaf",
+            };
+
+            console.log(obj);
+            handle(obj);
+            handle(obj);
+            console.log(data);
         }
 
         if (hasPizzaWon) {
-            setWinner("Pizza");
+            let obj = {
+                id: generateId(8),
+                winner: "Pizza",
+            };
+
+            console.log(obj);
+            handle(obj);
+            handle(obj);
+            console.log(data);
         }
 
-        console.log("verify");
+        // if (winner) {
+        //     let obj = {
+        //         id: generateId(8),
+        //         winner: "Pizza",
+        //     };
+
+        //     console.log(obj);
+        //     handle(obj);
+        // }
+
+        // if ((leafMoves.length + pizzaMoves.length == 9) & (winner == null)) {
+        //     setWinner("No winner");
+        //     let obj = {
+        //         id: generateId(8),
+        //         winner: "No winner",
+        //     };
+
+        //     console.log(obj);
+        //     handle(obj);
+        // }
     }
 
     return (
         <div className="App">
+            <button onClick={(e) => console.log(data)}>21</button>
+
             <h1>Jogo da velha</h1>
             <h2>
                 Vez de {userMove === "pizza" ? <IoMdPizza /> : <IoIosLeaf />}
