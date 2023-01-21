@@ -5,8 +5,6 @@ export const dataSlice = createSlice({
     initialState: [],
     reducers: {
         addData: (state, action) => {
-            console.log("addData reducer");
-            console.log(action.payload)
             return [...state, action.payload];
         },
     },

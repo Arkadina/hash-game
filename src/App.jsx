@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 
 import styled from "styled-components";
 import "./App.css";
+import { generateMove } from "./utils/randomMove";
 
 const Container = styled.div`
     width: 600px;
@@ -26,13 +27,14 @@ const SmallContainer = styled.div`
 `;
 
 function App() {
-    const [userMove, setUserMove] = useState("pizza");
+    const [userMove, setUserMove] = useState(generateMove());
     const [moves, setMoves] = useState(["", "", "", "", "", "", "", "", ""]);
     const [pizzaMoves, setPizzaMoves] = useState([]);
     const [leafMoves, setLeafMoves] = useState([]);
     const [winner, setWinner] = useState(null);
     const data = useSelector((state) => state.data);
     const dispatch = useDispatch();
+    console.log(data);
 
     function handle(obj) {
         dispatch(addData(obj));
@@ -53,10 +55,9 @@ function App() {
             }
             userMove === "pizza" ? setUserMove("leaf") : setUserMove("pizza");
         }
-        verifyWinner();
     }
 
-    function verifyWinner() {
+    if (leafMoves.length + pizzaMoves.length >= 5) {
         let arrayLeaf = [
             [leafMoves.slice(0, 3)],
             [leafMoves.slice(1, 4)],
@@ -88,6 +89,7 @@ function App() {
             for (let y = 0; y < arrayWins.length; y++) {
                 if (arrayLeaf[i].toString() == arrayWins[y].toString()) {
                     hasLeafWon = true;
+                    console.log("foi");
                 }
             }
         }
@@ -96,6 +98,7 @@ function App() {
             for (let y = 0; y < arrayWins.length; y++) {
                 if (arrayPizza[i].toString() == arrayWins[y].toString()) {
                     hasPizzaWon = true;
+                    console.log("foi");
                 }
             }
         }
@@ -105,11 +108,11 @@ function App() {
                 id: generateId(8),
                 winner: "Leaf",
             };
-
-            console.log(obj);
             handle(obj);
-            handle(obj);
-            console.log(data);
+            setPizzaMoves([]);
+            setLeafMoves([]);
+            setWinner("Leaf");
+            setMoves(["", "", "", "", "", "", "", "", ""]);
         }
 
         if (hasPizzaWon) {
@@ -117,44 +120,22 @@ function App() {
                 id: generateId(8),
                 winner: "Pizza",
             };
+            setPizzaMoves([]);
+            setLeafMoves([]);
 
-            console.log(obj);
             handle(obj);
-            handle(obj);
-            console.log(data);
+            setWinner("Pizza");
+            setMoves(["", "", "", "", "", "", "", "", ""]);
         }
-
-        // if (winner) {
-        //     let obj = {
-        //         id: generateId(8),
-        //         winner: "Pizza",
-        //     };
-
-        //     console.log(obj);
-        //     handle(obj);
-        // }
-
-        // if ((leafMoves.length + pizzaMoves.length == 9) & (winner == null)) {
-        //     setWinner("No winner");
-        //     let obj = {
-        //         id: generateId(8),
-        //         winner: "No winner",
-        //     };
-
-        //     console.log(obj);
-        //     handle(obj);
-        // }
     }
 
     return (
-        <div className="App">
-            <button onClick={(e) => console.log(data)}>21</button>
-
-            <h1>Jogo da velha</h1>
+        <div className="App ">
+            <h1>Hash game</h1>
             <h2>
-                Vez de {userMove === "pizza" ? <IoMdPizza /> : <IoIosLeaf />}
+                Turn: {userMove === "pizza" ? <IoMdPizza /> : <IoIosLeaf />}
             </h2>
-            <h2>Ganhador: {winner != null ? winner : ""}</h2>
+            <h2>Last winner: {winner != null ? winner : "No winner"}</h2>
             <Container>
                 {moves.map((item, index) => (
                     <SmallContainer
