@@ -1,30 +1,13 @@
-import { useEffect, useState } from "react";
-import { IoMdPizza, IoIosLeaf } from "react-icons/io";
+import { useState } from "react";
 import { generateId } from "./utils/generateId";
+
 import { useSelector, useDispatch } from "react-redux";
 import { addData } from "./features/dataSlice";
-import { motion } from "framer-motion";
 
-import styled from "styled-components";
 import "./App.css";
 import { generateMove } from "./utils/randomMove";
-
-const Container = styled.div`
-    width: 600px;
-    height: 600px;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: 1fr 1fr 1fr;
-    background-color: #fff;
-`;
-
-const SmallContainer = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
-`;
+import InfoContainer from "./components/InfoContainer";
+import GridContainer from "./components/GridContainer";
 
 function App() {
     const [userMove, setUserMove] = useState(generateMove());
@@ -82,26 +65,8 @@ function App() {
             [2, 4, 6],
         ];
 
-        let hasLeafWon = null;
-        let hasPizzaWon = null;
-
-        for (let i = 0; i < arrayLeaf.length; i++) {
-            for (let y = 0; y < arrayWins.length; y++) {
-                if (arrayLeaf[i].toString() == arrayWins[y].toString()) {
-                    hasLeafWon = true;
-                    console.log("foi");
-                }
-            }
-        }
-
-        for (let i = 0; i < arrayPizza.length; i++) {
-            for (let y = 0; y < arrayWins.length; y++) {
-                if (arrayPizza[i].toString() == arrayWins[y].toString()) {
-                    hasPizzaWon = true;
-                    console.log("foi");
-                }
-            }
-        }
+        let hasLeafWon = verifyWinner(arrayLeaf, arrayWins);
+        let hasPizzaWon = verifyWinner(arrayPizza, arrayWins);
 
         if (hasLeafWon) {
             let obj = {
@@ -127,59 +92,38 @@ function App() {
             setWinner("Pizza");
             setMoves(["", "", "", "", "", "", "", "", ""]);
         }
+
+        if (leafMoves.length + pizzaMoves.length >= 9) {
+            if (!hasPizzaWon & !hasLeafWon) {
+                setWinner("Nobody won");
+                setPizzaMoves([]);
+                setLeafMoves([]);
+                let obj = {
+                    id: generateId(8),
+                    winner: "no winner",
+                };
+                handle(obj);
+                setMoves(["", "", "", "", "", "", "", "", ""]);
+            }
+        }
+    }
+
+    function verifyWinner(arrayItem, arrayWins) {
+        let winner = null;
+        for (let i = 0; i < arrayItem.length; i++) {
+            for (let y = 0; y < arrayWins.length; y++) {
+                if (arrayItem[i].toString() == arrayWins[y].toString()) {
+                    winner = true;
+                }
+            }
+        }
+        return winner;
     }
 
     return (
-        <div className="App ">
-            <h1>Hash game</h1>
-            <h2>
-                Turn: {userMove === "pizza" ? <IoMdPizza /> : <IoIosLeaf />}
-            </h2>
-            <h2>Last winner: {winner != null ? winner : "No winner"}</h2>
-            <Container>
-                {moves.map((item, index) => (
-                    <SmallContainer
-                        key={index}
-                        onClick={(e) => handleMove(index)}
-                    >
-                        {moves[index] !== "" ? (
-                            moves[index].userMove === "pizza" ? (
-                                <motion.div
-                                    initial={{
-                                        opacity: 0,
-                                        scale: 0,
-                                    }}
-                                    animate={{
-                                        opacity: 1,
-                                        scale: [0.5, 1.2, 0.8, 1],
-                                    }}
-                                    transition={{
-                                        duration: 0.4,
-                                    }}
-                                >
-                                    <IoMdPizza className="iconGame" />
-                                </motion.div>
-                            ) : (
-                                <motion.div
-                                    initial={{
-                                        opacity: 0,
-                                        scale: 0,
-                                    }}
-                                    animate={{
-                                        opacity: 1,
-                                        scale: [0.5, 1.2, 0.8, 1],
-                                    }}
-                                    transition={{
-                                        duration: 0.4,
-                                    }}
-                                >
-                                    <IoIosLeaf className="iconGame" />
-                                </motion.div>
-                            )
-                        ) : null}
-                    </SmallContainer>
-                ))}
-            </Container>
+        <div className="App">
+            <InfoContainer userMove={userMove} winner={winner} />
+            <GridContainer moves={moves} handleMove={handleMove} />
         </div>
     );
 }
