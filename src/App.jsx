@@ -1,13 +1,23 @@
 import { useState } from "react";
 import { generateId } from "./utils/generateId";
 
+import "./App.css";
+
 import { useSelector, useDispatch } from "react-redux";
 import { addData } from "./features/dataSlice";
 
-import "./App.css";
 import { generateMove } from "./utils/randomMove";
 import InfoContainer from "./components/InfoContainer";
 import GridContainer from "./components/GridContainer";
+
+import app from "./database/firebaseConfig";
+import {
+    addDoc,
+    getFirestore,
+    collection,
+    getDocs,
+} from "firebase/firestore/lite";
+const db = getFirestore(app);
 
 function App() {
     const [userMove, setUserMove] = useState(generateMove());
@@ -17,10 +27,21 @@ function App() {
     const [winner, setWinner] = useState(null);
     const data = useSelector((state) => state.data);
     const dispatch = useDispatch();
-    console.log(data);
 
-    function handle(obj) {
+    async function handle(obj) {
         dispatch(addData(obj));
+
+        try {
+            const docRef = await addDoc(collection(db, "matches"), obj);
+            console.log("Document written with ID: ", docRef.id);
+        } catch (e) {
+            console.error("Error adding document: ", e);
+        }
+
+        const querySnapshots = await getDocs(collection(db, "matches"));
+        querySnapshots.forEach((doc) => {
+            console.log(doc.id);
+        });
     }
 
     function handleMove(pos) {
