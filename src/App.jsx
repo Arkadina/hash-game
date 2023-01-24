@@ -3,7 +3,7 @@ import { generateId } from "./utils/generateId";
 
 import "./App.css";
 
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { addData } from "./features/dataSlice";
 
 import { generateMove } from "./utils/randomMove";
@@ -17,6 +17,7 @@ import {
     collection,
     getDocs,
 } from "firebase/firestore/lite";
+import moment from "moment/moment";
 const db = getFirestore(app);
 
 function App() {
@@ -25,7 +26,6 @@ function App() {
     const [pizzaMoves, setPizzaMoves] = useState([]);
     const [leafMoves, setLeafMoves] = useState([]);
     const [winner, setWinner] = useState(null);
-    const data = useSelector((state) => state.data);
     const dispatch = useDispatch();
 
     async function handle(obj) {
@@ -75,6 +75,39 @@ function App() {
             [(pizzaMoves[0], pizzaMoves[1], pizzaMoves[3])],
         ];
 
+        let hasLeafWon = verifyWinner(arrayLeaf);
+        let hasPizzaWon = verifyWinner(arrayPizza);
+
+        if (hasLeafWon) {
+            resetWinner("Leaf");
+        }
+
+        if (hasPizzaWon) {
+            resetWinner("Pizza");
+        }
+
+        if (leafMoves.length + pizzaMoves.length >= 9) {
+            if (!hasPizzaWon & !hasLeafWon) {
+                resetWinner("Nobody won");
+            }
+        }
+    }
+
+    function resetWinner(winner) {
+        let obj = {
+            id: generateId(8),
+            winner: winner,
+            time: moment().calendar(),
+        };
+        setWinner(winner);
+        setPizzaMoves([]);
+        setLeafMoves([]);
+        setMoves(["", "", "", "", "", "", "", "", ""]);
+        handle(obj);
+    }
+
+    function verifyWinner(arrayItem) {
+        let winner = null;
         let arrayWins = [
             [0, 1, 2],
             [3, 4, 5],
@@ -86,51 +119,6 @@ function App() {
             [2, 4, 6],
         ];
 
-        let hasLeafWon = verifyWinner(arrayLeaf, arrayWins);
-        let hasPizzaWon = verifyWinner(arrayPizza, arrayWins);
-
-        if (hasLeafWon) {
-            let obj = {
-                id: generateId(8),
-                winner: "Leaf",
-            };
-            handle(obj);
-            setPizzaMoves([]);
-            setLeafMoves([]);
-            setWinner("Leaf");
-            setMoves(["", "", "", "", "", "", "", "", ""]);
-        }
-
-        if (hasPizzaWon) {
-            let obj = {
-                id: generateId(8),
-                winner: "Pizza",
-            };
-            setPizzaMoves([]);
-            setLeafMoves([]);
-
-            handle(obj);
-            setWinner("Pizza");
-            setMoves(["", "", "", "", "", "", "", "", ""]);
-        }
-
-        if (leafMoves.length + pizzaMoves.length >= 9) {
-            if (!hasPizzaWon & !hasLeafWon) {
-                setWinner("Nobody won");
-                setPizzaMoves([]);
-                setLeafMoves([]);
-                let obj = {
-                    id: generateId(8),
-                    winner: "no winner",
-                };
-                handle(obj);
-                setMoves(["", "", "", "", "", "", "", "", ""]);
-            }
-        }
-    }
-
-    function verifyWinner(arrayItem, arrayWins) {
-        let winner = null;
         for (let i = 0; i < arrayItem.length; i++) {
             for (let y = 0; y < arrayWins.length; y++) {
                 if (arrayItem[i].toString() == arrayWins[y].toString()) {
@@ -138,12 +126,17 @@ function App() {
                 }
             }
         }
+
         return winner;
     }
 
     return (
         <div className="App">
-            <InfoContainer userMove={userMove} winner={winner} />
+            <InfoContainer
+                userMove={userMove}
+                winner={winner}
+                resetWinner={resetWinner}
+            />
             <GridContainer moves={moves} handleMove={handleMove} />
         </div>
     );

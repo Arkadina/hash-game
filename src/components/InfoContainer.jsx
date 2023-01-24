@@ -1,7 +1,11 @@
 import React from "react";
 import { IoMdPizza, IoIosLeaf } from "react-icons/io";
 
-function InfoContainer({ userMove, winner }) {
+function InfoContainer({ userMove, winner, resetWinner }) {
+    function handleOnClick() {
+        resetWinner("Nobody won");
+    }
+
     return (
         <div className="info-container">
             <div className="items-container">
@@ -12,7 +16,9 @@ function InfoContainer({ userMove, winner }) {
                 Last winner: {winner != null ? winner : "No winner"}
             </div>
 
-            <div className="items-container">Reset game</div>
+            <div className="items-container" onClick={(e) => handleOnClick()}>
+                Reset game
+            </div>
         </div>
     );
 }
